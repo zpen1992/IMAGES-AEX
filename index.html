@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!-- saved from url=(0023)http://111.119.204.224/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+ <link rel="icon" type="image/svg+xml" href="http://111.119.204.224/icon/rabbit.svg">
+  <title>媒体库封面在线生成</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./媒体库封面在线生成_files/css2" rel="stylesheet">
+  <style>
+    :root{--primary-color:#1677ff;--primary-hover-color:#4096ff;--success-color:#52c41a;--bg-light:#f0f2f5;--bg-white:#ffffff;--text-dark:#333;--text-light:#666;--border-color:#d9d9d9;--shadow-light:0 2px 8px rgba(0,0,0,.08);--shadow-medium:0 6px 16px rgba(0,0,0,.1);--card-radius:12px}
+    body{margin:0;padding:0;font-family:"Noto Sans SC",sans-serif;background:var(--bg-light);color:var(--text-dark);line-height:1.6}
+    .container{width:90%;max-width:1200px;margin:40px auto;padding:40px;background:var(--bg-white);border-radius:var(--card-radius);box-shadow:var(--shadow-medium);box-sizing:border-box}
+    .top-banner{position:sticky;top:0;z-index:1000;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(10px);box-shadow:var(--shadow-light);border-bottom:1px solid var(--border-color)}
+    .top-banner h2{margin:0;font-size:22px;font-weight:700;color:var(--text-dark)}
+    .top-banner .pink-link{color:var(--primary-color);text-decoration:none}
+    .top-banner .pink-link:hover{color:var(--primary-hover-color)}
+    #generateBtn{padding:10px 24px;font-size:16px;font-weight:600;background:var(--primary-color);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:all .2s ease}
+    #generateBtn:hover{background:var(--primary-hover-color);transform:translateY(-2px);box-shadow:var(--shadow-light)}
+    #hero{padding-top:40px}
+    #settingsPanel h2.section-title{text-align:center;margin-bottom:30px;color:var(--text-dark);font-size:28px}
+    details.setting-group{margin-bottom:20px;border:1px solid var(--border-color);border-radius:8px;overflow:hidden;transition:box-shadow .2s ease}
+    details.setting-group[open]{box-shadow:var(--shadow-light)}
+    details.setting-group summary{padding:15px 20px;font-size:18px;font-weight:600;cursor:pointer;background:#fafafa;user-select:none}
+    details.setting-group .setting-content{padding:20px;border-top:1px solid var(--border-color);display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+    .form-field{display:flex;flex-direction:column}
+    .form-field label{margin-bottom:6px;font-weight:500;color:var(--text-dark)}
+    .form-field input[type=text],.form-field input[type=number],.form-field select{padding:8px 12px;border:1px solid var(--border-color);border-radius:6px;font-size:15px;transition:border-color .2s ease,box-shadow .2s ease}
+    .form-field input:focus,.form-field select:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 2px rgba(22,119,255,.2)}
+    .color-input-group{display:flex;align-items:center}
+    .color-input-group input[type=text]{flex:1}
+    .color-input-group input[type=color]{width:38px;height:38px;padding:0;border:none;border-radius:6px;cursor:pointer;margin-left:8px}
+    .hint{font-size:.85rem;color:var(--text-light);margin-top:4px}
+    input[type=file]{font-size:14px;border:1px solid var(--border-color);border-radius:6px;padding:8px}
+    input[type=file]::file-selector-button{padding:6px 12px;border:none;background:var(--primary-color);color:#fff;border-radius:4px;margin-right:10px;cursor:pointer;transition:background-color .2s}
+    input[type=file]::file-selector-button:hover{background:var(--primary-hover-color)}
+    .posters-upload-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+    .poster-upload-item{display:flex;flex-direction:column;text-align:center}
+    .poster-upload-item label{color:var(--text-dark);font-weight:500}
+    .preview-wrapper{margin-top:40px}
+    #coverCanvas{max-width:100%;border-radius:var(--card-radius);box-shadow:var(--shadow-medium);border:1px solid var(--border-color)}
+    .poster-search-section{margin-top:20px}
+    .search-bar{display:flex;width:100%;max-width:700px;margin:0 auto 30px auto;height:50px;border-radius:25px;overflow:hidden;box-shadow:var(--shadow-light);border:1px solid var(--border-color)}
+    .search-bar input{flex:1;border:none;padding:0 20px;font-size:16px;outline:none}
+    .search-bar button{border:none;padding:0 30px;font-size:16px;color:#ffffff;background:var(--primary-color);cursor:pointer}
+    .search-bar button:hover{background:var(--primary-hover-color)}
+    .poster-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:20px}
+    .poster-item{position:relative;background:var(--bg-white);border-radius:var(--card-radius);box-shadow:var(--shadow-light);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
+    .poster-item:hover{transform:translateY(-5px);box-shadow:var(--shadow-medium)}
+    .poster-item img{width:100%;height:240px;object-fit:cover;display:block;border-radius:var(--card-radius) var(--card-radius) 0 0;background-color:#eee;opacity:0;transition:opacity .4s ease-out}
+    .poster-item img.loaded{opacity:1}
+    .poster-item .poster-title{padding:10px;font-size:15px;font-weight:600;text-align:center;line-height:1.3;color:var(--text-dark)}
+    .poster-item.selected{box-shadow:0 0 0 3px var(--success-color),var(--shadow-medium)}
+    .poster-item.selected::after{content:"✓";position:absolute;top:10px;right:10px;width:24px;height:24px;background:var(--success-color);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;z-index:2}
+    .progress-container{position:fixed;bottom:0;left:0;right:0;height:8px;background:#e0e0e0;z-index:9999}
+    .progress-fill{width:0%;height:100%;background:var(--success-color);transition:width .3s ease-out}
+    .toast{position:fixed;right:24px;bottom:24px;background:#ff69b4;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;box-shadow:var(--shadow-medium);z-index:10001;opacity:0;transform:translateY(20px);pointer-events:none;animation:toast-in .3s forwards,toast-out .3s forwards 3.7s}
+    @keyframes toast-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes toast-out{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}
+  </style>
+</head>
+<body>
+<header class="top-banner">
+  <h2>
+    <a href="http://111.119.204.224/#" target="_blank" class="pink-link">小白兔</a>封面生成工具
+  </h2>
+  <button id="generateBtn">生成封面并下载</button>
+</header>
+
+<section id="hero">
+  <div id="settingsPanel" class="container">
+    <h2 class="section-title">封面生成工具</h2>
+
+    <details class="setting-group" open="">
+      <summary>背景与文字</summary>
+      <div class="setting-content">
+        <div class="form-field"><label>渐变色1</label><div class="color-input-group"><input type="text" id="bgColor1Text" value="B37FEB"><input type="color" id="bgColor1Picker" value="#B37FEB"></div></div>
+        <div class="form-field"><label>渐变色2</label><div class="color-input-group"><input type="text" id="bgColor2Text" value="5CACE5"><input type="color" id="bgColor2Picker" value="#5CACE5"></div></div>
+        <div class="form-field"><label>大标题</label><input type="text" id="titleText" value="武林外传"></div>
+        <div class="form-field"><label>英文描述</label><input type="text" id="descText" value="Swordsman"></div>
+        <div class="form-field"><label>标题颜色</label><div class="color-input-group"><input type="text" id="titleColorText" value="FFFFFF"><input type="color" id="titleColorPicker" value="#FFFFFF"></div></div>
+        <div class="form-field"><label>描述颜色</label><div class="color-input-group"><input type="text" id="descColorText" value="FFFFFF"><input type="color" id="descColorPicker" value="#FFFFFF"></div></div>
+      </div>
+    </details>
+
+    <details class="setting-group">
+      <summary>字体设置</summary>
+      <div class="setting-content">
+        <div class="form-field"><label>标题字体</label><select id="titleFont"><option value="Noto Sans SC">Noto Sans SC</option><option value="Noto Serif SC" selected="">Noto Serif SC</option></select></div>
+        <div class="form-field"><label>本地标题字体</label><input type="file" id="localTitleFont" accept=".ttf,.otf"><span class="hint">(支持TTF/OTF)</span></div>
+        <div class="form-field"><label>标题字符间距</label><input type="number" id="titleLetterSpacing" value="0" step="0.1"></div>
+        <div class="form-field"><label>描述字符间距</label><input type="number" id="descLetterSpacing" value="0" step="0.1"></div>
+        <div class="form-field"><label>描述字体</label><select id="descFont"><option value="Noto Sans SC" selected="">Noto Sans SC</option><option value="Noto Serif SC">Noto Serif SC</option></select></div>
+        <div class="form-field"><label>本地描述字体</label><input type="file" id="localDescFont" accept=".ttf,.otf"><span class="hint">(支持TTF/OTF)</span></div>
+      </div>
+    </details>
+
+    <details class="setting-group">
+      <summary>海报与阴影</summary>
+      <div class="setting-content">
+        <div class="form-field"><label>描述矩形颜色</label><div class="color-input-group"><input type="text" id="descRectColorText" value="00FF00"><input type="color" id="descRectColorPicker" value="#00FF00"></div></div>
+        <div class="form-field"><label>海报倾斜度</label><input type="number" id="posterAngle" value="16" step="1"></div>
+        <div class="form-field"><label>海报组 offsetX</label><input type="number" id="offsetX" value="-60" step="1"></div>
+        <div class="form-field"><label>海报组 offsetY</label><input type="number" id="offsetY" value="300" step="1"></div>
+        <div class="form-field"><label>阴影颜色</label><div class="color-input-group"><input type="text" id="shadowColorText" value="000000"><input type="color" id="shadowColorPicker" value="#000000"></div></div>
+        <div class="form-field"><label>阴影透明度</label><input type="number" id="groupShadowOpacity" value="0.5" step="0.05" min="0" max="1"><span class="hint">(0.0 - 1.0)</span></div>
+      </div>
+    </details>
+
+    <details class="setting-group">
+      <summary>海报来源 (请严格选择8个文件，3和4为主要海报)</summary>
+      <div class="setting-content">
+        <div class="form-field" style="grid-column:1/-1"><label>本地批量上传</label><input type="file" id="multiPosters" accept="image/*" multiple=""><span class="hint">(优先于单张上传)</span></div>
+        <div class="posters-upload-grid" style="grid-column:1/-1">
+          <div class="poster-upload-item"><label>海报1</label><input type="file" id="poster1" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报2</label><input type="file" id="poster2" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报3</label><input type="file" id="poster3" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报4</label><input type="file" id="poster4" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报5</label><input type="file" id="poster5" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报6</label><input type="file" id="poster6" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报7</label><input type="file" id="poster7" accept="image/*"></div>
+          <div class="poster-upload-item"><label>海报8</label><input type="file" id="poster8" accept="image/*"></div>
+        </div>
+      </div>
+    </details>
+
+    <div class="preview-wrapper"><canvas id="coverCanvas" width="1920" height="1080"></canvas></div>
+  </div>
+</section>
+
+<div class="container poster-search-section">
+  <h2 class="section-title" style="margin-bottom:20px">在线选择海报 (来自 TMDB)</h2>
+  <div class="search-bar"><input type="text" id="searchInput" placeholder="搜索电影、电视剧…"><button id="searchBtn">搜索</button></div>
+  <div id="searchResults" class="poster-wall"></div>
+  <div id="posterWall" class="poster-wall" style="margin-top:20px"><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/czz4MOzBOsLxFL8G40eIvRKE2Sp.jpg"><img alt="魔法坏女巫2" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/czz4MOzBOsLxFL8G40eIvRKE2Sp.jpg"><div class="poster-title">魔法坏女巫2</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/hYGXf2kkykFhBny0vHHmbx5G27o.jpg"><img alt="阿凡达：火与烬" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/hYGXf2kkykFhBny0vHHmbx5G27o.jpg"><div class="poster-title">阿凡达：火与烬</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/vmz5Ev5dZGPltYH58wOZhPmxL7Z.jpg"><img alt="疯狂动物城2" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/vmz5Ev5dZGPltYH58wOZhPmxL7Z.jpg"><div class="poster-title">疯狂动物城2</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/wKNe1BonauSwiYzm3eQoHRm6OIv.jpg"><img alt="青出于蓝" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/wKNe1BonauSwiYzm3eQoHRm6OIv.jpg"><div class="poster-title">青出于蓝</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/p7R6ddRrTdEwjZ7gXLFnyYuULrM.jpg"><img alt="家弑服务" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/p7R6ddRrTdEwjZ7gXLFnyYuULrM.jpg"><div class="poster-title">家弑服务</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/nlQulJ98z4hyCVlIxuAYrNdpyPg.jpg"><img alt="利刃出鞘3：亡者归来" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/nlQulJ98z4hyCVlIxuAYrNdpyPg.jpg"><div class="poster-title">利刃出鞘3：亡者归来</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/7WbCDgiBKdzqKY6FQszTL5D3Du8.jpg"><img alt="至尊马蒂" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/7WbCDgiBKdzqKY6FQszTL5D3Du8.jpg"><div class="poster-title">至尊马蒂</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/86XhoDE61sNqLKcuUOOXzgDxoeu.jpg"><img alt="百米。" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/86XhoDE61sNqLKcuUOOXzgDxoeu.jpg"><div class="poster-title">百米。</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/bhIytk0hlaHmGrQFY9P7bWhZZfC.jpg"><img alt="鬼灭之刃：无限城篇 第一章 猗窝座再袭" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/bhIytk0hlaHmGrQFY9P7bWhZZfC.jpg"><div class="poster-title">鬼灭之刃：无限城篇 第一章 猗窝座再袭</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/fPS0MgOCD7VmFy4EVmq21cr0BFC.jpg"><img alt="极限特工" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/fPS0MgOCD7VmFy4EVmq21cr0BFC.jpg"><div class="poster-title">极限特工</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/pcaSAivZ8uFYAVmufI0ArKy7mE3.jpg"><img alt="一战再战" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/pcaSAivZ8uFYAVmufI0ArKy7mE3.jpg"><div class="poster-title">一战再战</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/b5BInTXQHEMF3AxlJb9yCcMXTr6.jpg"><img alt="拯救地球" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/b5BInTXQHEMF3AxlJb9yCcMXTr6.jpg"><div class="poster-title">拯救地球</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/ew4YPi9d0korzDmAOC9N1SCjYp0.jpg"><img alt="惊天魔盗团3" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/ew4YPi9d0korzDmAOC9N1SCjYp0.jpg"><div class="poster-title">惊天魔盗团3</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/iTil24OZutt1bNTsbnc1YI04kuw.jpg"><img alt="超人" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/iTil24OZutt1bNTsbnc1YI04kuw.jpg"><div class="poster-title">超人</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/sRSttgj0rd1ZuWtaOB1ErqKsCsI.jpg"><img alt="永恒站" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/sRSttgj0rd1ZuWtaOB1ErqKsCsI.jpg"><div class="poster-title">永恒站</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/hmwPrYslUn9BVkCsxDcaPi0FaHg.jpg"><img alt="新狂蟒之灾" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/hmwPrYslUn9BVkCsxDcaPi0FaHg.jpg"><div class="poster-title">新狂蟒之灾</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/7GLwLJ3YCLOUZpZ3F57Ysy5UOTP.jpg"><img alt="Frankenstein" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/7GLwLJ3YCLOUZpZ3F57Ysy5UOTP.jpg"><div class="poster-title">Frankenstein</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/9hRm4WVM3D5HzjMBTKSsPBOd50c.jpg"><img alt="罪人" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/9hRm4WVM3D5HzjMBTKSsPBOd50c.jpg"><div class="poster-title">罪人</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/yNm9xjdkBeVriMrD9fcCSHrSFax.jpg"><img alt="凶器" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/yNm9xjdkBeVriMrD9fcCSHrSFax.jpg"><div class="poster-title">凶器</div></div><div class="poster-item" data-image-url="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/vf6zd73SXTjBgLQX7o9ytFmRufZ.jpg"><img alt="玩具熊的五夜惊魂2" data-src="https://images.weserv.nl/?url=image.tmdb.org/t/p/w500/vf6zd73SXTjBgLQX7o9ytFmRufZ.jpg"><div class="poster-title">玩具熊的五夜惊魂2</div></div></div>
+</div>
+
+<div class="progress-container"><div id="selectionProgress" class="progress-fill"></div></div>
+
+<script>
+// ---- Global Variables & Helpers ----
+let TMDB_API_KEY = ""; // This will be fetched
+const MAX_SELECTION = 8;
+const selectedWall = new Set();
+let progressEl;
+
+function showToast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.remove(); }, 4000);
+}
+
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+
+// ---- TMDB & Image Handling ----
+async function loadTMDBKey() {
+  try {
+    const resp = await fetch("/api/tmdb_key", { cache: "no-store" });
+    if (!resp.ok) throw new Error(resp.status);
+    const data = await resp.json();
+    TMDB_API_KEY = data.key || "";
+    if (!TMDB_API_KEY) throw new Error("empty key");
+  } catch (e) {
+    showToast("TMDB API Key 加载失败，在线搜索功能将不可用。");
+    console.error("TMDB Key Error:", e);
+  }
+}
+
+function proxifyImg(url) {
+  const withoutProtocol = url.replace(/^https?:\/\//, "");
+  return `https://images.weserv.nl/?url=${withoutProtocol}`;
+}
+
+async function fetchJson(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`TMDB 请求失败: ${resp.status} ${resp.statusText}`);
+  }
+  return resp.json();
+}
+
+// ---- Lazy Loading with IntersectionObserver ----
+const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const card = entry.target;
+      const img = card.querySelector('img');
+      const src = img.dataset.src;
+      if (src) {
+        img.src = src;
+        img.onload = () => { img.classList.add('loaded'); };
+      }
+      observer.unobserve(card);
+    }
+  });
+}, { rootMargin: "0px 0px 300px 0px" });
+
+
+// ---- Poster Wall & Selection ----
+function createPosterCard(obj) {
+  const card = document.createElement("div");
+  card.className = "poster-item";
+  card.dataset.imageUrl = obj.poster;
+  const img = document.createElement("img");
+  img.alt = obj.title;
+  img.dataset.src = obj.poster;
+  const titleEl = document.createElement("div");
+  titleEl.className = "poster-title";
+  titleEl.textContent = obj.title;
+  card.append(img, titleEl);
+  card.addEventListener("click", () => toggleSelect(card));
+  lazyLoadObserver.observe(card);
+  return card;
+}
+
+function renderPosterWall(list, container) {
+  container.innerHTML = "";
+  list.forEach(obj => {
+    const card = createPosterCard(obj);
+    container.appendChild(card);
+  });
+}
+
+function toggleSelect(cardEl) {
+  const url = cardEl.dataset.imageUrl;
+  if (cardEl.classList.contains("selected")) {
+    cardEl.classList.remove("selected");
+    selectedWall.delete(url);
+  } else {
+    if (getLocalSelectedCount() + selectedWall.size >= MAX_SELECTION) {
+      showToast(`最多只能选择 ${MAX_SELECTION} 张海报`);
+      return;
+    }
+    cardEl.classList.add("selected");
+    selectedWall.add(url);
+  }
+  updateProgressBar();
+  debouncedRefresh(); // Refresh preview on selection change
+}
+
+async function fetchTrendingPosters() {
+  const wall = document.getElementById("posterWall");
+  if (!TMDB_API_KEY) return;
+  try {
+    const data = await fetchJson(`https://api.themoviedb.org/3/trending/movie/day?language=zh-CN&api_key=${TMDB_API_KEY}`);
+    const posters = data.results.filter(i => i.poster_path).slice(0, 40).map(i => ({
+      poster: proxifyImg(`https://image.tmdb.org/t/p/w500${i.poster_path}`),
+      title: i.title || i.name || "未知",
+    }));
+    renderPosterWall(posters, wall);
+    await refreshPreview(); // Initial preview
+  } catch (e) {
+    console.error(e);
+    wall.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#999;">热门海报加载失败，请检查网络或 TMDB API Key。</p>`;
+  }
+}
+
+// ---- Canvas Drawing Logic ----
+const posterRects=[{translate:[145.22,-349.14],x:1114.75,y:42.06,w:400,h:600,rx:40.76},{translate:[172.68,-473.11],x:1569.51,y:77.79,w:400,h:600,rx:40.76},{translate:[305.41,-277.82],x:941.1,y:647.65,w:400,h:600,rx:40.76},{translate:[332.88,-401.78],x:1395.86,y:683.39,w:400,h:600,rx:40.76},{translate:[360.35,-525.75],x:1850.63,y:719.12,w:400,h:600,rx:40.76},{translate:[465.61,-206.49],x:767.44,y:1253.25,w:400,h:600,rx:40.76},{translate:[493.08,-330.46],x:1222.21,y:1288.98,w:400,h:600,rx:40.76},{translate:[520.54,-454.43],x:1676.98,y:1324.72,w:400,h:600,rx:40.76}];
+function formatHexColor(str){let val=str.trim();if(!val.startsWith("#"))val="#"+val;return val}
+function syncColorInput(pickerId,textId){const picker=document.getElementById(pickerId);const text=document.getElementById(textId);picker.addEventListener("input",()=>{text.value=picker.value.replace("#","")});text.addEventListener("change",()=>{const val=formatHexColor(text.value);picker.value=val})}
+function hexToRGBA(hex,opacity){hex=hex.replace("#","");if(hex.length===3){hex=hex.split("").map(s=>s+s).join("")}const r=parseInt(hex.substring(0,2),16);const g=parseInt(hex.substring(2,4),16);const b=parseInt(hex.substring(4,6),16);return`rgba(${r},${g},${b},${opacity})`}
+function roundRect(ctx,x,y,w,h,r){ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y)}
+function drawTextWithLetterSpacing(ctx,text,x,y,letterSpacing){if(letterSpacing===0){ctx.fillText(text,x,y);return}for(let i=0,len=text.length;i<len;i++){const char=text[i];ctx.fillText(char,x,y);x+=ctx.measureText(char).width+letterSpacing}}
+function drawPosterWithShadow(ctx,img,rectData,angleDeg,offsetX,offsetY,groupShadowOpacity,shadowColor){const{translate,x,y,w,h,rx}=rectData;let baseTy=translate[1]-535;let baseY=y-535;let finalTx=translate[0]+offsetX;let finalTy=baseTy+offsetY;let finalX=x+offsetX;let finalY=baseY+offsetY;ctx.save();ctx.translate(finalTx,finalTy);const rad=angleDeg*Math.PI/180;ctx.rotate(rad);ctx.shadowOffsetX=5;ctx.shadowOffsetY=5;ctx.shadowBlur=5;ctx.shadowColor=hexToRGBA(shadowColor,groupShadowOpacity);ctx.fillStyle="white";ctx.beginPath();roundRect(ctx,finalX,finalY,w,h,rx);ctx.fill();ctx.shadowColor="transparent";ctx.beginPath();roundRect(ctx,finalX,finalY,w,h,rx);ctx.clip();ctx.drawImage(img,finalX,finalY,w,h);ctx.restore()}
+async function internalGenerateCover(posterSources,download=!1){const canvas=document.getElementById("coverCanvas"),ctx=canvas.getContext("2d"),bgColor1=formatHexColor(document.getElementById("bgColor1Text").value),bgColor2=formatHexColor(document.getElementById("bgColor2Text").value),grd=ctx.createLinearGradient(0,0,canvas.width,0);grd.addColorStop(0,bgColor1),grd.addColorStop(1,bgColor2),ctx.fillStyle=grd,ctx.fillRect(0,0,canvas.width,canvas.height);const titleColor=formatHexColor(document.getElementById("titleColorText").value),descColor=formatHexColor(document.getElementById("descColorText").value),descRectColor=formatHexColor(document.getElementById("descRectColorText").value),shadowColor=formatHexColor(document.getElementById("shadowColorText").value),titleText=(document.getElementById("titleText").value||"短剧").trim(),descText=(document.getElementById("descText").value||"PLAYLET").trim(),angleDeg=parseFloat(document.getElementById("posterAngle").value)||16,offsetX=parseFloat(document.getElementById("offsetX").value)||0,offsetY=parseFloat(document.getElementById("offsetY").value)||0;let groupShadowOpacity=parseFloat(document.getElementById("groupShadowOpacity").value)||.5;groupShadowOpacity<0&&(groupShadowOpacity=0),groupShadowOpacity>1&&(groupShadowOpacity=1);const titleFontSize=120,descFontSize=60,gap=30,titleX=100,totalTextHeight=titleFontSize+gap+descFontSize,titleY=(canvas.height-totalTextHeight)/2,titleFontSelection=document.getElementById("titleFont").value;let titleFontFamily;const localTitleFontFile=document.getElementById("localTitleFont").files[0];if(localTitleFontFile){const blobURL=URL.createObjectURL(localTitleFontFile),localTitleFont=new FontFace("LocalTitleFont",`url(${blobURL})`);try{await localTitleFont.load(),document.fonts.add(localTitleFont),titleFontFamily="LocalTitleFont"}catch(e){console.error("本地标题字体加载失败",e),titleFontFamily="Noto Sans SC"===titleFontSelection?"'Noto Sans SC', sans-serif":"'Noto Serif SC', serif"}}else titleFontFamily="Noto Sans SC"===titleFontSelection?"'Noto Sans SC', sans-serif":"'Noto Serif SC', serif";ctx.font=localTitleFontFile?`${titleFontSize}px ${titleFontFamily}`:`900 ${titleFontSize}px ${titleFontFamily}`,ctx.textBaseline="top",ctx.fillStyle=titleColor;const titleLetterSpacing=parseFloat(document.getElementById("titleLetterSpacing").value)||0;drawTextWithLetterSpacing(ctx,titleText,titleX,titleY,titleLetterSpacing);let descFontFamily;const localDescFontFile=document.getElementById("localDescFont").files[0],descFontSelection=document.getElementById("descFont").value;if(localDescFontFile){const blobURL=URL.createObjectURL(localDescFontFile),localDescFont=new FontFace("LocalDescFont",`url(${blobURL})`);try{await localDescFont.load(),document.fonts.add(localDescFont),descFontFamily="LocalDescFont"}catch(e){console.error("本地描述字体加载失败",e),descFontFamily="Noto Sans SC"===descFontSelection?"'Noto Sans SC', sans-serif":"'Noto Serif SC', serif"}}else descFontFamily="Noto Sans SC"===descFontSelection?"'Noto Sans SC', sans-serif":"'Noto Serif SC', serif";ctx.font=localDescFontFile?`${descFontSize}px ${descFontFamily}`:`300 ${descFontSize}px ${descFontFamily}`;const descLetterSpacing=parseFloat(document.getElementById("descLetterSpacing").value)||0,rectX=titleX,rectW=20,rectY=titleY+titleFontSize+gap,rectH=descFontSize;ctx.fillStyle=descRectColor,ctx.fillRect(rectX,rectY,rectW,rectH),ctx.textBaseline="middle";const descX=rectX+rectW+5,descCenterY=rectY+descFontSize/2;ctx.fillStyle=descColor,drawTextWithLetterSpacing(ctx,descText,descX,descCenterY,descLetterSpacing);for(let i=0;i<8;i++){const src=posterSources[i];if(src){const img=new Image;"string"==typeof src?(img.crossOrigin="anonymous",img.src=src):img.src=URL.createObjectURL(src);await new Promise(res=>{img.onload=()=>{drawPosterWithShadow(ctx,img,posterRects[i],angleDeg,offsetX,offsetY,groupShadowOpacity,shadowColor),res()}})}}if(download){const rawTitle=(document.getElementById("titleText").value||"cover").trim(),safeTitle=rawTitle.replace(/[\\/:\*\?\"<>\|]/g,"").replace(/\s+/g,""),now=new Date,filename=`${safeTitle}-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,"0")}${now.getDate().toString().padStart(2,"0")}${now.getHours().toString().padStart(2,"0")}${now.getMinutes().toString().padStart(2,"0")}.jpg`,dataURL=canvas.toDataURL("image/jpeg",1),link=document.createElement("a");link.download=filename,link.href=dataURL,link.click()}}
+
+// ---- Live Preview & Main Logic ----
+async function refreshPreview() {
+  const wallUrls = [...selectedWall];
+  const multiFiles = Array.from(document.getElementById("multiPosters").files || []);
+  let singleFiles = [];
+  for (let i = 1; i <= 8; i++) {
+    const fileInput = document.getElementById("poster" + i);
+    if (fileInput && fileInput.files.length > 0) {
+      singleFiles.push(fileInput.files[0]);
+    }
+  }
+  const localFiles = multiFiles.length > 0 ? multiFiles : singleFiles;
+  const combinedSources = [...wallUrls, ...localFiles];
+  let finalSources = new Array(8).fill(null);
+  for (let i = 0; i < 8; i++) {
+    if (combinedSources[i]) {
+      finalSources[i] = combinedSources[i];
+    }
+  }
+  await internalGenerateCover(finalSources, false);
+}
+
+const debouncedRefresh = debounce(refreshPreview, 250);
+
+function getLocalSelectedCount() {
+  const multi = document.getElementById("multiPosters").files || [];
+  if (multi.length > 0) return multi.length;
+  let cnt = 0;
+  for (let i = 1; i <= 8; i++) {
+    if (document.getElementById("poster" + i).files.length) cnt++;
+  }
+  return cnt;
+}
+
+function updateProgressBar() {
+  const total = selectedWall.size + getLocalSelectedCount();
+  const percent = Math.min(total / MAX_SELECTION, 1) * 100;
+  if (progressEl) progressEl.style.width = percent + "%";
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  progressEl = document.getElementById("selectionProgress");
+  syncColorInput("bgColor1Picker", "bgColor1Text");
+  syncColorInput("bgColor2Picker", "bgColor2Text");
+  syncColorInput("titleColorPicker", "titleColorText");
+  syncColorInput("descColorPicker", "descColorText");
+  syncColorInput("descRectColorPicker", "descRectColorText");
+  syncColorInput("shadowColorPicker", "shadowColorText");
+
+  await loadTMDBKey();
+  fetchTrendingPosters();
+
+  const settingsPanel = document.getElementById('settingsPanel');
+  settingsPanel.addEventListener('input', debouncedRefresh);
+  settingsPanel.addEventListener('change', debouncedRefresh);
+
+  document.getElementById("generateBtn").addEventListener("click", async () => {
+    const wallUrls = [...selectedWall];
+    const multiFiles = Array.from(document.getElementById("multiPosters").files || []);
+    let singleFiles = [];
+    for(let i=1;i<=8;i++){singleFiles.push(document.getElementById("poster"+i).files[0]||null)}
+    let localFiles=multiFiles.length>0?multiFiles:singleFiles.filter(Boolean);
+    if(wallUrls.length+localFiles.length!==MAX_SELECTION){showToast(`海报总数必须为 ${MAX_SELECTION} 张！`);return}
+    const finalSources=[...wallUrls,...localFiles];
+    await internalGenerateCover(finalSources,true)
+  });
+
+  document.getElementById("searchBtn").addEventListener("click", async () => {
+    const keyword = document.getElementById("searchInput").value.trim();
+    if (!keyword || !TMDB_API_KEY) return;
+    try {
+      const data = await fetchJson(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(keyword)}&language=zh-CN&api_key=${TMDB_API_KEY}`);
+      const posters = data.results.filter(r => r.poster_path && (r.media_type === "movie" || r.media_type === "tv")).slice(0, 20).map(i => ({
+        poster: proxifyImg(`https://image.tmdb.org/t/p/w500${i.poster_path}`),
+        title: i.title || i.name || "未知",
+      }));
+      renderPosterWall(posters, document.getElementById("searchResults"));
+    } catch (e) {
+      console.error("TMDB Search Failed:", e);
+      showToast("搜索失败，请检查网络连接。");
+    }
+  });
+
+  document.getElementById("multiPosters").addEventListener("change", updateProgressBar);
+  for(let i=1;i<=8;i++){document.getElementById("poster"+i).addEventListener("change",updateProgressBar)}
+});
+</script>
+
+</body></html>
